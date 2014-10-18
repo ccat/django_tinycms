@@ -18,7 +18,7 @@ setup(name='tinycms',
       install_requires=[
           # -*- Extra requirements: -*-
           "django",
-          "mptt"
+          "django-mptt"
       ],
       entry_points="""
       # -*- Entry points: -*-
