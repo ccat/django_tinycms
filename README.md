@@ -1,14 +1,15 @@
 django_tinycms
 ==============
-
-## Description
-
+tinycms is a simple CMS application for Django.
+Created for Django engineers with following concepts.
 * Easy to use
 * Easy to understand
 * Easy to customize
 
 
 ## Requirement
+* django
+* django-mptt
 
 ## Usage
 
@@ -45,13 +46,14 @@ Djangoを利用してシステムを構築するエンジニア向けに、以�
 DjangoでパーツとしてCMSを利用したい時や、CMSの勉強に利用できます。
 
 ## 機能一覧
+* i18nに対応した多言語の表示
 
 
 ## 要件
 以下のパッケージに依存します。
 
 * django
-* mptt
+* django-mptt
 
 
 ## インストール方法
