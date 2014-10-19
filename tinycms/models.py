@@ -8,8 +8,6 @@ from django.shortcuts import render
 
 from mptt.models import MPTTModel, TreeForeignKey
 
-from views import *
-
 try:
     LANGUAGES = settings.LANGUAGES
 except:
@@ -22,6 +20,15 @@ except:
 
 
 class Page(MPTTModel):
+    """Class of web page.
+
+    variables:
+    slug -- A part of url.
+    template -- Django template for this page.
+    url_overwrite -- Url of this page.  When url_overwrite configured, slug is ignored.
+    is_active -- When True, this page can be seen.
+    parent -- Mptt foreign key for parent.
+    """
     slug = models.CharField(max_length=512)
     template = models.CharField(max_length=1024,choices=TEMPLATES)
     url_overwrite = models.URLField(max_length=2048, null=True, blank=True)
@@ -35,6 +42,8 @@ class Page(MPTTModel):
         return self.slug
 
     def get_url(self):
+        """Return url of this page.
+        """
         if(self.url_overwrite != None and self.url_overwrite != "" ):
             return self.url_overwrite
         else:
@@ -45,6 +54,12 @@ class Page(MPTTModel):
             return tempurl
 
     def render(self,request,dics={}):
+        """ Return HttpResponse of this page.
+
+        Arguments:
+        request -- HttpRequest
+        dics -- Special Key,Value for template
+        """
         tempDic = {}
         for key,val in dics.items():
             tempDic[key] = val
@@ -59,10 +74,22 @@ class Page(MPTTModel):
         return render(request, self.template, tempDic)
 
     def save(self):
+        """Deplicate check and add url
+        """
+        if(not Dispatcher.checkValid(self)):
+            raise Exception("Duplicated url")
         super(Page,self).save()
         Dispatcher.register()
 
 class Content(models.Model):
+    """Contents of a page.
+
+    Variables:
+    page -- Foreign key for page
+    value_name -- This content will be passed by {value_name:content} to template.
+    language -- Language of this content
+    content -- HTML content.
+    """
     #title = models.CharField(max_length=1024)
     page = models.ForeignKey('Page', related_name='contents')
     value_name = models.CharField(max_length=256)
@@ -70,8 +97,69 @@ class Content(models.Model):
     content = models.TextField()
 
     def __unicode__(self):
-        return unicode(self.title)+":"+unicode(self.language)
+        return unicode(self.page)+":"+unicode(self.value_name)+":"+unicode(self.language)
 
     def render(self):
+        """Return HTML string.
+        """
         return self.content
 
+
+class Dispatcher(object):
+    """ URL dispatcher.
+    """
+
+    dispatchURLs = None
+
+    @classmethod
+    def checkValid(cls,item):
+        """Check item's url exists or not.
+
+        Variables:
+        item -- Page object.
+        """
+        assert(isinstance(item,Page),"item must Page object")
+        if(cls.dispatchURLs==None):
+            cls.register()
+        url = item.get_url()
+        if(url in cls.dispatchURLs):
+            if(cls.dispatchURLs[url] != item):
+                return False
+        return True
+
+    @classmethod
+    def dispatch(cls,url,request):
+        """ Dispatch url and return HttpResponse
+
+        Variables:
+        url -- url string.
+        request -- HttpRequest
+        """
+        if(cls.dispatchURLs==None):
+            cls.register()
+        if(url in cls.dispatchURLs):
+            return cls.dispatchURLs[url].render(request)
+        raise Http404
+
+    @classmethod
+    def clear(cls):
+        """ Delete dispatchURLs
+        """
+        cls.dispatchURLs={}
+
+    @classmethod
+    def register(cls):
+        """Generate URL list.
+        """
+        cls.clear()
+        page_roots = Page.objects.root_nodes()
+
+        for item in page_roots:
+            cls.generate_url(item)
+
+    @classmethod
+    def generate_url(cls,node):
+        if(node.is_active):
+            cls.dispatchURLs[node.get_url()]=node
+            for item in node.get_children():
+                cls.generate_url(item)

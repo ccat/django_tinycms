@@ -1,5 +1,5 @@
 from django import template
-from django_tinycms.models import *
+from tinycms.models import *
 
 register = template.Library()
 
@@ -16,21 +16,22 @@ class TinycmsMenuAbsolute(template.Node):
 
 
 @register.simple_tag(takes_context=True)
-def show_contents(context, value_name,contentTag=None,titleTag=None):
-    if(isinstance(value_name, list)):
-        valList = value_name
-    else:
-        valList = context[value_name]
+def show_contents(context, value_name,contentTag=None):
+    """Show cms content.
+
+    Variables:
+    value_name -- value_name of contents to be shown.
+    contentTag -- When contentTag is not None, Each content is tagged by contentTag like <contentTag>content</contentTag>
+    """
+    valList = context[value_name]
 
     result =""
 
     for item in valList:
-        if(titleTag):
-            result += "<%s>%s</%s>" % (titleTag,item.title,titleTag)
         if(contentTag):
-            result += "<%s>%s</%s>" % (contentTag,item.content,contentTag)
+            result += "<%s>%s</%s>" % (contentTag,item,contentTag)
         else:
-            result += "%s" % item.content
+            result += "%s" % item
     return result
 
 

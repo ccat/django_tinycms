@@ -3,34 +3,10 @@ from django.http import Http404
 
 from models import *
 
-class Dispatcher(object):
-
-    dispatchURLs = None
-
-    @classmethod
-    def dispatch(cls,url,request):
-        if(cls.dispatchURLs==None):
-            cls.register()
-        if(url in cls.dispatchURLs):
-            return cls.dispatchURLs[url].render(request)
-        raise Http404
-
-    @classmethod
-    def register(cls):
-        cls.dispatchURLs={}
-        page_roots = Page.objects.root_nodes()
-
-        for item in page_roots:
-            cls.generate_url(item)
-
-    @classmethod
-    def generate_url(cls,node):
-        if(node.is_active):
-            cls.dispatchURLs[node.get_url()]=node
-            for item in node.get_children():
-                cls.generate_url(item)
 
 def show_page(request,url):
+    """Return HttpResponse of url
+    """
     return Dispatcher.dispatch(url,request)
     #return page.render(request)
 
