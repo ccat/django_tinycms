@@ -11,15 +11,31 @@ Created for Django engineers with following concepts.
 * django
 * django-mptt
 
-## Usage
-
-
-
 ## Install
 
-
-
-## Contribution
+1. Install tinycms
+   > pip install tinycms
+2. Add mptt and tinycms to INSTALLED_APPS in settings.py
+   > INSTALLED_APPS = (
+   >     ....
+   >     'mptt',
+   >     'tinycms',
+   > )
+3. Add TEMPLATE_CONTEXT_PROCESSORS to settings.py
+   > TEMPLATE_CONTEXT_PROCESSORS = (
+   >     'django.contrib.auth.context_processors.auth',
+   >     'django.contrib.messages.context_processors.messages',
+   >     'django.core.context_processors.i18n',
+   >     'django.core.context_processors.request',
+   >     'django.core.context_processors.media',
+   >     'django.core.context_processors.static',
+   >     "django.core.context_processors.tz",
+   > )
+4. Add url(r'', include('tinycms.urls')) to urls.py
+   > urlpatterns = i18n_patterns('',
+   >     url(r'^admin/', include(admin.site.urls)),
+   >     url(r'', include('tinycms.urls')),
+   > )
 
 ## Licence
 
@@ -57,6 +73,29 @@ DjangoでパーツとしてCMSを利用したい時や、CMSの勉強に利用�
 
 
 ## インストール方法
+1. 以下のコマンドでtinycmsをインストールする
+   > pip install tinycms
+2. settings.pyのINSTALLED_APPSにmpttとtinycmsを追加
+   > INSTALLED_APPS = (
+   >     ....
+   >     'mptt',
+   >     'tinycms',
+   > )
+3. settings.pyにTEMPLATE_CONTEXT_PROCESSORSを追加
+   > TEMPLATE_CONTEXT_PROCESSORS = (
+   >     'django.contrib.auth.context_processors.auth',
+   >     'django.contrib.messages.context_processors.messages',
+   >     'django.core.context_processors.i18n',
+   >     'django.core.context_processors.request',
+   >     'django.core.context_processors.media',
+   >     'django.core.context_processors.static',
+   >     "django.core.context_processors.tz",
+   > )
+4. urls.pyにurl(r'', include('tinycms.urls'))を追加
+   > urlpatterns = i18n_patterns('',
+   >     url(r'^admin/', include(admin.site.urls)),
+   >     url(r'', include('tinycms.urls')),
+   > )
 
 
 ## ライセンス

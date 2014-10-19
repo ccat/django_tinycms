@@ -1,10 +1,14 @@
 from django.contrib import admin
+from django.conf import settings
+
 from mptt.admin import MPTTModelAdmin
 
 from models import *
 
+
 class ContentInline(admin.StackedInline):
     model = Content
+    extra = 0
 
 class PageAdmin(MPTTModelAdmin):
     inlines = [ContentInline]
