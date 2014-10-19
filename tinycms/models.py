@@ -5,6 +5,7 @@ from django.http import Http404#,HttpResponse
 #from django.template import Context, Template
 from django.shortcuts import render
 #from django.shortcuts import render_to_response
+from django.core.urlresolvers import reverse
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -52,6 +53,10 @@ class Page(MPTTModel):
                 tempurl = self.parent.get_url()
             tempurl += self.slug+"/"
             return tempurl
+
+    def get_absolute_url(self):
+        temp = self.get_url()
+        return reverse('tinycms_show_page', kwargs={"url":temp})
 
     def render(self,request,dics={}):
         """ Return HttpResponse of this page.

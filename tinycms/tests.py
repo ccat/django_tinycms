@@ -87,7 +87,7 @@ class ViewTest(TestCase):
         req = DummyRequest()
         from views import *
         result = show_page(req,"test/")
-        candResult = '<html><body><ul><li>test<ul><li>test2</li></ul></li></ul><p>test</p></body></html>'
+        candResult = "<html><body><ul><li><a href='/en-us/test/'>test</a><ul><li><a href='/en-us/test/test2/'>test2</a></li></ul></li></ul><p>test</p></body></html>"
         self.assertEqual(result.content,candResult)
 
 
