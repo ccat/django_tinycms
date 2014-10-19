@@ -1,4 +1,5 @@
 from django import template
+from django.utils import translation
 from tinycms.models import *
 
 register = template.Library()
@@ -34,4 +35,34 @@ def show_contents(context, value_name,contentTag=None):
             result += "%s" % item
     return result
 
+def create_children_menu(parent,sublevel,lang):
+    result =""
+    for item in parent.get_children():
+        menuContent = Content.objects.filter(page=item,language=lang,value_name="menu_title")
+        if(menuContent.count()!=0):
+            result = result + "<li>"+menuContent[0].render()
+            if(sublevel>0):
+                if(item.get_children().count()>0):
+                    result = result+"<ul>" +create_children_menu(item,sublevel-1,lang) +"</ul>"
+            result = result+"</li>"
+    return result
 
+@register.simple_tag(takes_context=True)
+def show_absolute_menu(context, sublevel = 0):
+    """Show absolute menu.  Content of value_name='menu_title' are used.
+
+    """
+    page_roots = Page.objects.root_nodes()
+    result =""
+
+    lang = translation.get_language()
+
+    for item in page_roots:
+        menuContent = Content.objects.filter(page=item,language=lang,value_name="menu_title")
+        if(menuContent.count()!=0):
+            result = result + "<li>"+menuContent[0].render()
+            if(sublevel>0):
+                if(item.get_children().count()>0):
+                    result = result +"<ul>"+ create_children_menu(item,sublevel-1,lang) +"</ul>"
+            result = result+"</li>"
+    return result

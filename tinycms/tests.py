@@ -49,8 +49,7 @@ class ViewTest(TestCase):
     def setUp(self):
         pass
 
-    def test_normal(self):
-        from views import *
+    def test_content(self):
         Dispatcher.clear()
         page = Page(slug="test",template="tinycms/shelltest.html",is_active=True)
         page.save()
@@ -62,10 +61,33 @@ class ViewTest(TestCase):
         cont.save()
 
         req = DummyRequest()
+        from views import *
         result = show_page(req,"test/")
-        candResult = '\r\n\r\n<html><body><p>test</p></body></html>\r\n'
+        candResult = '<html><body><p>test</p></body></html>'
         self.assertEqual(result.content,candResult)
 
         with self.assertRaises(Exception):
             result = show_page(req,"test2/")
+
+    def test_menu(self):
+        Dispatcher.clear()
+        page = Page(slug="test",template="tinycms/menutest.html",is_active=True)
+        page.save()
+        page2 = Page(slug="test2",template="tinycms/menutest.html",parent=page,is_active=True)
+        page2.save()
+        cont = Content(page=page,value_name="main",language="ja",content="test")
+        cont.save()
+        cont = Content(page=page,value_name="main",language="en-us",content="test")
+        cont.save()
+        cont = Content(page=page,value_name="menu_title",language="en-us",content="test")
+        cont.save()
+        cont = Content(page=page2,value_name="menu_title",language="en-us",content="test2")
+        cont.save()
+
+        req = DummyRequest()
+        from views import *
+        result = show_page(req,"test/")
+        candResult = '<html><body><ul><li>test<ul><li>test2</li></ul></li></ul><p>test</p></body></html>'
+        self.assertEqual(result.content,candResult)
+
 

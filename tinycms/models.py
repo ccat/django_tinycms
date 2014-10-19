@@ -71,6 +71,7 @@ class Page(MPTTModel):
             if(item.value_name not in tempDic):
                 tempDic[item.value_name] = []
             tempDic[item.value_name].append(item.content)
+        tempDic["page"] = self
         return render(request, self.template, tempDic)
 
     def save(self):
