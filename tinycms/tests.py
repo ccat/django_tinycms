@@ -2,11 +2,13 @@
 from django.test.client import Client
 
 from models import *
+from views import *
 
 import datetime
 
 class ModellTest(TestCase):
     def setUp(self):
+        Dispatcher.clear()
         self.c512 =""
         for i in range(0,511):
             self.c512 += "a"
@@ -37,6 +39,24 @@ class ModellTest(TestCase):
         Dispatcher.register()
         self.assertEqual(Dispatcher.dispatchURLs,testDispatch)#,"Invalid dispatch url\n"+str(Dispatcher.dispatchURLs))
 
+    def test_remove_firstlastslash(self):
+        testDispatch={}
+
+        page = Page(slug="/test/",template="tinycms/shelltest.html",is_active=True)
+        page.save()
+        page2 = Page(slug="/test2/",template="tinycms/shelltest.html",parent=page,is_active=True)
+        page2.save()
+
+        page3 = Page(slug="/test3",template="tinycms/shelltest.html",parent=page,is_active=True,url_overwrite="/test3")
+        page3.save()
+
+        testDispatch[u'test/']=page
+        testDispatch[u'test/test2/']=page2
+        testDispatch[u'test3']=page3
+
+        Dispatcher.register()
+        self.assertEqual(Dispatcher.dispatchURLs,testDispatch)#,"Invalid dispatch url\n"+str(Dispatcher.dispatchURLs))
+
 
 class DummyRequest:
     def __init__(self,user=None,GET={}):
@@ -47,10 +67,9 @@ class DummyRequest:
 
 class ViewTest(TestCase):
     def setUp(self):
-        pass
+        Dispatcher.clear()
 
     def test_content(self):
-        Dispatcher.clear()
         page = Page(slug="test",template="tinycms/shelltest.html",is_active=True)
         page.save()
         page2 = Page(slug="test2",template="tinycms/shelltest.html",parent=page,is_active=True)
@@ -61,7 +80,6 @@ class ViewTest(TestCase):
         cont.save()
 
         req = DummyRequest()
-        from views import *
         result = show_page(req,"test/")
         candResult = '<html><body><p>test</p></body></html>'
         self.assertEqual(result.content,candResult)
@@ -70,7 +88,6 @@ class ViewTest(TestCase):
             result = show_page(req,"test2/")
 
     def test_menu(self):
-        Dispatcher.clear()
         page = Page(slug="test",template="tinycms/menutest.html",is_active=True)
         page.save()
         page2 = Page(slug="test2",template="tinycms/menutest.html",parent=page,is_active=True)
@@ -85,7 +102,6 @@ class ViewTest(TestCase):
         cont.save()
 
         req = DummyRequest()
-        from views import *
         result = show_page(req,"test/")
         candResult = "<html><body><ul><li><a href='/en-us/test/'>test</a><ul><li><a href='/en-us/test/test2/'>test2</a></li></ul></li></ul><p>test</p></body></html>"
         self.assertEqual(result.content,candResult)
