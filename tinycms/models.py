@@ -46,12 +46,20 @@ class Page(MPTTModel):
         """Return url of this page.
         """
         if(self.url_overwrite != None and self.url_overwrite != "" ):
-            return self.url_overwrite
+            tempurl=self.url_overwrite
+            if(tempurl[0]=="/"):
+                tempurl=tempurl[1:]
+            return tempurl
         else:
             tempurl = ""
             if(self.parent):
                 tempurl = self.parent.get_url()
-            tempurl += self.slug+"/"
+            tempslug=self.slug
+            if(tempslug[0]=="/"):
+                tempslug=tempslug[1:]
+            if(tempslug[-1]!="/"):
+                tempslug=tempslug+"/"
+            tempurl += tempslug
             return tempurl
 
     def get_absolute_url(self):
