@@ -39,8 +39,7 @@ class ModellTest(TestCase):
         Dispatcher.register()
         self.assertEqual(Dispatcher.dispatchURLs,testDispatch)#,"Invalid dispatch url\n"+str(Dispatcher.dispatchURLs))
 
-    def test_remove_firstlastslash(self):
-        testDispatch={}
+    def test_slash(self):
 
         page = Page(slug="/test/",template="tinycms/shelltest.html",is_active=True)
         page.save()
@@ -50,9 +49,24 @@ class ModellTest(TestCase):
         page3 = Page(slug="/test3",template="tinycms/shelltest.html",parent=page,is_active=True,url_overwrite="/test3")
         page3.save()
 
+        page4 = Page(slug="/",template="tinycms/shelltest.html",is_active=True)
+        page4.save()
+
+        testDispatch={}
         testDispatch[u'test/']=page
         testDispatch[u'test/test2/']=page2
         testDispatch[u'test3']=page3
+        testDispatch[u'']=page4
+
+        Dispatcher.register()
+        self.assertEqual(Dispatcher.dispatchURLs,testDispatch)#,"Invalid dispatch url\n"+str(Dispatcher.dispatchURLs))
+
+    def test_slash2(self):
+        page4 = Page(slug="home",template="tinycms/shelltest.html",is_active=True,url_overwrite="/")
+        page4.save()
+
+        testDispatch={}
+        testDispatch[u'']=page4
 
         Dispatcher.register()
         self.assertEqual(Dispatcher.dispatchURLs,testDispatch)#,"Invalid dispatch url\n"+str(Dispatcher.dispatchURLs))
@@ -76,7 +90,7 @@ class ViewTest(TestCase):
         page2.save()
         cont = Content(page=page,value_name="main",language="ja",content="test")
         cont.save()
-        cont = Content(page=page,value_name="main",language="en-us",content="test")
+        cont = Content(page=page,value_name="main",language="en",content="test")
         cont.save()
 
         req = DummyRequest()
@@ -94,16 +108,35 @@ class ViewTest(TestCase):
         page2.save()
         cont = Content(page=page,value_name="main",language="ja",content="test")
         cont.save()
-        cont = Content(page=page,value_name="main",language="en-us",content="test")
+        cont = Content(page=page,value_name="main",language="en",content="test")
         cont.save()
-        cont = Content(page=page,value_name="menu_title",language="en-us",content="test")
+        cont = Content(page=page,value_name="menu_title",language="en",content="test")
         cont.save()
-        cont = Content(page=page2,value_name="menu_title",language="en-us",content="test2")
+        cont = Content(page=page2,value_name="menu_title",language="en",content="test2")
         cont.save()
 
         req = DummyRequest()
         result = show_page(req,"test/")
-        candResult = "<html><body><ul><li><a href='/en-us/test/'>test</a><ul><li><a href='/en-us/test/test2/'>test2</a></li></ul></li></ul><p>test</p></body></html>"
+        candResult = "<html><body><ul><li><a href='/en/test/'>test</a><ul><li><a href='/en/test/test2/'>test2</a></li></ul></li></ul><p>test</p></body></html>"
         self.assertEqual(result.content,candResult)
+
+    def test_slash(self):
+        page4 = Page(slug="/",template="tinycms/shelltest.html",is_active=True)
+        page4.save()
+        cont = Content(page=page4,value_name="main",language="en",content="test")
+        cont.save()
+        cont = Content(page=page4,value_name="main",language="ja",content="test")
+        cont.save()
+
+        Dispatcher.register()
+
+        from django.test import Client
+        c = Client()
+        response = c.get('/en/')
+        self.assertEqual(response.status_code,200)
+
+
+
+
 
 

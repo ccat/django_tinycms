@@ -57,7 +57,7 @@ class Page(MPTTModel):
             tempslug=self.slug
             if(tempslug[0]=="/"):
                 tempslug=tempslug[1:]
-            if(tempslug[-1]!="/"):
+            if(tempslug!="" and tempslug[-1]!="/"):
                 tempslug=tempslug+"/"
             tempurl += tempslug
             return tempurl
