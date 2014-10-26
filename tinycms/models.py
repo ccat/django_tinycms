@@ -95,6 +95,7 @@ class Page(MPTTModel):
         super(Page,self).save()
         Dispatcher.register()
 
+
 class Content(models.Model):
     """Contents of a page.
 
@@ -117,6 +118,16 @@ class Content(models.Model):
         """Return HTML string.
         """
         return self.content
+
+
+#from django import forms
+#class ContentForm(forms.ModelForm):
+#    def __init__(self, *args, **kwargs):
+#        super(ContentForm, self).__init__(*args, **kwargs)
+#        self.fields['value_name'] = forms.ChoiceField(choices=MY_CHOICES)
+#
+#    class Meta:
+#        model = Content
 
 
 class Dispatcher(object):
