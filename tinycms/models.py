@@ -32,7 +32,8 @@ class Page(MPTTModel):
     """
     slug = models.CharField(max_length=512)
     template = models.CharField(max_length=1024,choices=TEMPLATES)
-    url_overwrite = models.URLField(max_length=2048, null=True, blank=True)
+    #url_overwrite = models.URLField(max_length=2048, null=True, blank=True)
+    url_overwrite = models.CharField(max_length=2048, null=True, blank=True)
     is_active = models.BooleanField(default=False)
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
 
@@ -95,6 +96,7 @@ class Page(MPTTModel):
         super(Page,self).save()
         Dispatcher.register()
 
+
 class Content(models.Model):
     """Contents of a page.
 
@@ -117,6 +119,16 @@ class Content(models.Model):
         """Return HTML string.
         """
         return self.content
+
+
+#from django import forms
+#class ContentForm(forms.ModelForm):
+#    def __init__(self, *args, **kwargs):
+#        super(ContentForm, self).__init__(*args, **kwargs)
+#        self.fields['value_name'] = forms.ChoiceField(choices=MY_CHOICES)
+#
+#    class Meta:
+#        model = Content
 
 
 class Dispatcher(object):
