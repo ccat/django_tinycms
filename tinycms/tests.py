@@ -1,10 +1,40 @@
 ﻿from django.test import TestCase
 from django.test.client import Client
+from django.conf import settings
 
 from models import *
 from views import *
 
 import datetime
+
+"""
+class InstallationTest(TestCase):
+
+    def test_urls(self):
+        from django.conf.urls import patterns, include, url
+
+        good_urlpatterns = patterns('',
+            url(r'',include("tinycms.urls"))
+        )
+
+        error_urlpatterns = patterns('',)
+
+        self.assertTrue(check_url(good_urlpatterns))
+        self.assertFalse(check_url(error_urlpatterns))
+
+    def test_languages(self):
+        pass
+
+    def test_templates(self):
+        pass
+
+
+class ConfigurationTest(TestCase):
+    pass
+
+class CreateAndShowPageTest(TestCase):
+    pass
+"""
 
 class ModellTest(TestCase):
     def setUp(self):

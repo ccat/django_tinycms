@@ -9,6 +9,30 @@ from django.core.urlresolvers import reverse
 
 from mptt.models import MPTTModel, TreeForeignKey
 
+"""
+def check_url(urlpattern):
+    for item in urlpattern:
+        try:
+            if(item.urlconf_module.__name__=="tinycms.urls"):
+                return True
+        except:
+            pass
+        try:
+            if(check_url(item.url_patterns)):
+                return True
+        except:
+            pass
+    return False
+
+
+
+test_target_urls=__import__(settings.ROOT_URLCONF)
+test_target_urls=getattr(test_target_urls,"urls")
+if(check_url(test_target_urls.urlpatterns)==False):
+    import warnings
+    warnings.warn("No urls for tinycms", UserWarning)
+"""
+
 try:
     LANGUAGES = settings.LANGUAGES
 except:
@@ -18,6 +42,7 @@ try:
     TEMPLATES = settings.TINYCMS_TEMPLATES
 except:
     TEMPLATES = (("tinycms/test_template.html","test_template"),)
+
 
 
 class Page(MPTTModel):
