@@ -35,7 +35,7 @@ def show_contents(context, value_name,contentTag=None):
             result += "%s" % item
     return result
 
-
+"""
 def internal_create_children_menu(item,sublevel,lang):
     result =""
     menuContent = Content.objects.filter(page=item,language=lang,value_name="menu_title")
@@ -57,9 +57,9 @@ def create_children_menu(parent,sublevel,lang):
 
 @register.simple_tag(takes_context=True)
 def show_absolute_menu(context, sublevel = 0):
-    """Show absolute menu.  Content of value_name='menu_title' are used.
+    "" "Show absolute menu.  Content of value_name='menu_title' are used.
 
-    """
+    "" "
     page_roots = Page.objects.root_nodes()
     result =""
 
@@ -68,4 +68,4 @@ def show_absolute_menu(context, sublevel = 0):
     for item in page_roots:
         result = result + internal_create_children_menu(item,sublevel,lang)
     return result
-
+"""
