@@ -21,5 +21,12 @@ class ContentAdmin(admin.ModelAdmin):
 admin.site.register(Content,ContentAdmin)
 
 
+def register(inlineClass,index=-1):
+    if(index==-1):
+        PageAdmin.inlines.append(inlineClass)
+    else:
+        PageAdmin.inlines.insert(index,inlineClass)
+
+
 
 
