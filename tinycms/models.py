@@ -44,6 +44,23 @@ except:
     TEMPLATES = (("tinycms/test_template.html","test_template"),)
 
 
+class ContentInheritanceList(object):
+    overwrite_classes=[]
+
+    @classmethod
+    def registerModelInheritance(cls,classname):
+        cls.overwrite_classes.insert(0, classname.lower())
+
+    @classmethod
+    def getInheritanceObject(cls,targetContent):
+        for item in cls.overwrite_classes:
+            try:
+                result = getattr(targetContent,item)
+                return result
+            except:
+                pass
+        return None
+
 
 class Page(MPTTModel):
     """Class of web page.
@@ -109,7 +126,7 @@ class Page(MPTTModel):
         for item in contents:
             if(item.value_name not in tempDic):
                 tempDic[item.value_name] = []
-            tempDic[item.value_name].append(item.content)
+            tempDic[item.value_name].append(item.render())
         tempDic["page"] = self
         return render(request, self.template, tempDic)
 
@@ -135,7 +152,7 @@ class Content(models.Model):
     page = models.ForeignKey('Page', related_name='contents')
     value_name = models.CharField(max_length=256)
     language = models.CharField(max_length=256, choices=LANGUAGES)
-    content = models.TextField()
+    content = models.TextField(default="")
 
     def __unicode__(self):
         return unicode(self.page)+":"+unicode(self.value_name)+":"+unicode(self.language)
@@ -143,7 +160,11 @@ class Content(models.Model):
     def render(self):
         """Return HTML string.
         """
-        return self.content
+        target=ContentInheritanceList.getInheritanceObject(self)
+        if(target==None):
+            return self.content
+        else:
+            return target.render()
 
 
 #from django import forms
