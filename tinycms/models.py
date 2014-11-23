@@ -211,6 +211,11 @@ class Dispatcher(object):
             cls.register()
         if(url in cls.dispatchURLs):
             return cls.dispatchURLs[url].render(request)
+
+        cls.register()
+        if(url in cls.dispatchURLs):
+            return cls.dispatchURLs[url].render(request)
+
         raise Http404
 
     @classmethod
