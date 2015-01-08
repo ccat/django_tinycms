@@ -1,5 +1,7 @@
 from django import template
 from django.utils import translation
+from django.http import Http404#,HttpResponse
+
 from tinycms.models import *
 
 register = template.Library()
@@ -24,6 +26,8 @@ def show_contents(context, value_name,contentTag=None):
     value_name -- value_name of contents to be shown.
     contentTag -- When contentTag is not None, Each content is tagged by contentTag like <contentTag>content</contentTag>
     """
+    if(value_name not in context):
+        raise Http404
     valList = context[value_name]
 
     result =""
